@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-primary">
+<nav *ngIf="showNavbar" class="navbar navbar-expand-sm navbar-dark bg-primary">
   <!-- Container wrapper -->
   <div class="container-fluid">
       <!-- Left elements -->
@@ -67,6 +67,15 @@
                   </tbody>
               </table>
           </div>
+          <!-- User Dropdown if user is logged in -->
+           <div *ngIf="userName$ | async as userName">
+               <button class="btn btn-light dropdown-toggle text-primary" type="button" (click)="showMembershipMenu()">
+                {{ userName }}
+               </button>
+               <ul [class]="isMembershipMenuVisible ? 'dropdown-menu dropdown-menu-end show':'dropdown-menu dropdown-menu-end'">
+                <li><a class="dropdown-item" (click)="onLogout()">Logout</a></li>
+               </ul>
+           </div>
       </div>
   </div>
 </nav>
