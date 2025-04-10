@@ -14,6 +14,10 @@ export class AuthService {
   private userNameSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   // Observable to expose the current username
   public userName$: Observable<string | null> = this.userNameSubject.asObservable();
+  // BehaviorSubject to hold the current UUID
+  private userUuidSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
+  // Observable to expose the current UUID
+  public userUuid$: Observable<string | null> = this.userUuidSubject.asObservable();
 
 
   constructor() { 
@@ -21,6 +25,8 @@ export class AuthService {
     supabase.auth.onAuthStateChange((event, session) => {
       const currentUser = session?.user ?? null;
       this.updateUserName(currentUser);
+      // Update the UUID when auth state changes
+      this.updateUserUuid(currentUser);
     });
   }
 
@@ -28,6 +34,13 @@ export class AuthService {
   private updateUserName(user: User | null):void {
     const username = user?.user_metadata?.['username'] || null;
     this.userNameSubject.next(username);
+  }
+
+  // Update the user UUID based on the user object
+  private updateUserUuid(user: User | null):void {
+    const uuid = user?.id || null;
+    this.userUuidSubject.next(uuid);
+    console.log(uuid);
   }
 
   // Sign up a new user and return the result
@@ -50,9 +63,10 @@ export class AuthService {
   public async signIn(email: string, password: string): Promise<{data: any; error: any}> {
     const{data, error} = await supabase.auth.signInWithPassword({email, password});
 
-    // If no error, update the username
+    // If no error, update the username and UUID
     if(!error) {
       this.updateUserName(data?.user ?? null);
+      this.updateUserUuid(data?.user ?? null);
     }
 
     return {data, error};
@@ -61,9 +75,10 @@ export class AuthService {
   // Sign out the current user and clear the username
   public async signOut(): Promise<{error: any}> {
     const {error} = await supabase.auth.signOut();
-    // if no error, clear the username
+    // if no error, clear the username and UUID
     if(!error) {
       this.updateUserName(null);
+      this.updateUserUuid(null);
     }
     return {error};
   }
