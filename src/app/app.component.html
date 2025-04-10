@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-primary">
+<nav *ngIf="showNavbar" class="navbar navbar-expand-sm navbar-dark bg-primary">
   <!-- Container wrapper -->
   <div class="container-fluid">
       <!-- Left elements -->
@@ -66,6 +66,20 @@
                       </tr>
                   </tbody>
               </table>
+              <div class="d-grid gap-2">
+                  <button class="btn btn-primary" type="button" (click)="onPlaceOrder()" [disabled]="cartItems.length === 0">
+                    Place Order
+                  </button>
+              </div>
+          </div>
+          <!-- User Dropdown if user is logged in -->
+           <div *ngIf="userName$ | async as userName">
+              <button class="btn btn-light dropdown-toggle text-primary" type="button" (click)="showMembershipMenu()">
+                {{ userName }}
+              </button>
+              <ul [class]="isMembershipMenuVisible ? 'dropdown-menu dropdown-menu-end show':'dropdown-menu dropdown-menu-end'">
+                <li><a class="dropdown-item" (click)="onLogout()">Logout</a></li>
+              </ul>
           </div>
       </div>
   </div>
